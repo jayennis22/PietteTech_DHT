@@ -25,7 +25,7 @@
  * Spark Core: D0, D1, D2, D3, D4, A0, A1, A3, A5, A6, A7
  * Particle  : any Pin but D0 & A5
  * See docs for more background
- *   http://docs.particle.io/firmware/#interrupts-attachinterrupt
+ *   https://docs.particle.io/reference/firmware/photon/#attachinterrupt-
  */
 
 #include "PietteTech_DHT.h" 
