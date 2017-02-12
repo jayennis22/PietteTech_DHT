@@ -53,7 +53,7 @@ unsigned long _lastTimeInLoop;
 void setup()
 {
   Serial.begin(9600);
-  while (!Serial.available() && millis() < 30000 {
+  while (!Serial.available() && millis() < 30000) {
     Serial.println("Press any key to start.");
     Particle.process();
     delay(1000);
