@@ -15,6 +15,8 @@
  *      February 2017       Migrated for Libraries 2.0
  *                          Fixed blocking acquireAndWait()
  *                          and previously ignored timeout setting
+ *      January  2019       Updated timing for Particle Mesh devices
+ *                          issue: https://github.com/particle-iot/device-os/issues/1654
  *
  * Based on adaptation by niesteszeck (github/niesteszeck)
  * Based on original DHT11 library (http://playgroudn.adruino.cc/Main/DHT11Lib)
@@ -37,35 +39,35 @@
 #include <Particle.h>
 #include <math.h>
 
-#define DHTLIB_VERSION "0.5"
+const char DHTLIB_VERSION                = "0.0.6";
 
 // device types
-#define DHT11                               11
-#define DHT21                               21
-#define AM2301                              21
-#define DHT22                               22
-#define AM2302                              22
+const int  DHT11                         = 11;
+const int  DHT21                         = 21;
+const int  AM2301                        = 21;
+const int  DHT22                         = 22;
+const int  AM2302                        = 22;
+                                            
+// state codes                              
+const int  DHTLIB_OK                     =  0;
+const int  DHTLIB_ACQUIRING              =  1;
+const int  DHTLIB_ACQUIRED               =  2;
+const int  DHTLIB_RESPONSE_OK            =  3;
+                                            
+// error codes                              
+const int  DHTLIB_ERROR_CHECKSUM         = -1;
+const int  DHTLIB_ERROR_ISR_TIMEOUT      = -2;
+const int  DHTLIB_ERROR_RESPONSE_TIMEOUT = -3;
+const int  DHTLIB_ERROR_DATA_TIMEOUT     = -4;
+const int  DHTLIB_ERROR_ACQUIRING        = -5;
+const int  DHTLIB_ERROR_DELTA            = -6;
+const int  DHTLIB_ERROR_NOTSTARTED       = -7;
 
-// state codes
-#define DHTLIB_OK                          0
-#define DHTLIB_ACQUIRING                   1
-#define DHTLIB_ACQUIRED                    2
-#define DHTLIB_RESPONSE_OK                 3
-
-// error codes
-#define DHTLIB_ERROR_CHECKSUM              -1
-#define DHTLIB_ERROR_ISR_TIMEOUT           -2
-#define DHTLIB_ERROR_RESPONSE_TIMEOUT      -3
-#define DHTLIB_ERROR_DATA_TIMEOUT          -4
-#define DHTLIB_ERROR_ACQUIRING             -5
-#define DHTLIB_ERROR_DELTA                 -6
-#define DHTLIB_ERROR_NOTSTARTED            -7
-
-#define DHT_CHECK_STATE                         \
-        if(_state == STOPPED)                   \
-            return _status;			\
-        else if(_state != ACQUIRED)		\
-            return DHTLIB_ERROR_ACQUIRING;      \
+#define DHT_CHECK_STATE                    \
+        if(_state == STOPPED)              \
+            return _status;			           \
+        else if(_state != ACQUIRED)		     \
+            return DHTLIB_ERROR_ACQUIRING; \
         if(_convert) convert();
 
 class PietteTech_DHT

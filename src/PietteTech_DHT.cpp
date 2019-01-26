@@ -17,7 +17,9 @@
  *      February 2017       Migrated for Libraries 2.0
  *                          Fixed blocking acquireAndWait()
  *                          and previously ignored timeout setting
- *
+ *      January  2019       Updated timing for Particle Mesh devices
+ *                          issue: https://github.com/particle-iot/device-os/issues/1654
+ *                          
  * Based on adaptation by niesteszeck (github/niesteszeck)
  * Based on original DHT11 library (http://playgroudn.adruino.cc/Main/DHT11Lib)
  *
@@ -180,7 +182,12 @@ void PietteTech_DHT::_isrCallback() {
     if (delta < 65) {      // Spec: 20-200us to first falling edge of response
       _us -= delta;
       break; //do nothing, it started the response signal
-    } if (125 < delta && delta < 200) {
+      
+// --------------- issue: https://github.com/particle-iot/device-os/issues/1654 -----------------
+//    } if (125 < delta && delta < 200) { // originally 
+    } if (125 < delta && delta < 220) {   // account for timing offset with Particle Mesh devices
+// ----------------------------------------------------------------------------------------------
+
 #if defined(DHT_DEBUG_TIMING)
       *_e++ = delta;  // record the edge -> edge time
 #endif

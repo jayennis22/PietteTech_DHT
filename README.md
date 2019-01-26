@@ -1,6 +1,6 @@
 <html>
   <body>
-    <b><big>Interrupt driven DHT 11/21/22 sensor library for Spark </big><br>
+    <b><big>Interrupt driven DHT 11/21/22 sensor library for Particle</big><br>
     </b>
     <p>
     </p>
@@ -10,7 +10,9 @@
     Scott Piette, Piette Technologies - scott.piette@gmail.com<br>
     Jan 18, 2014&nbsp; - Initial port to Spark Core<br>
     Oct 01, 2014&nbsp; - Added DHT11/21 support, fixed timing issues, enhanced examples<br>
-    Sep 23, 2016&nbsp; - Updated for Particle and moved isrCallback
+    Sep 23, 2016&nbsp; - Updated for Particle and moved isrCallback<br>
+    Feb 12, 2017&nbsp; - Transferred responsibility for Particle compatibility to EliteIO<br>
+    Jan 26, 2019&nbsp; - Updated timing for Particle Mesh devices<br>
     <p>
     </p>
     <p></p>
@@ -39,10 +41,11 @@
       BASED ON:</p>
     DHT11 interrupt library <a href="https://github.com/niesteszeck">https://github.com/niesteszeck</a><br>
     DHT11 library <a href="http://playground.arduino.cc/Main/DHT11Lib">http://playground.arduino.cc/Main/DHT11Lib</a>
+    Original PietteTech_DHT library <a href="https://github.com/piettetech/PietteTech_DHT">https://github.com/piettetech/PietteTech_DHT</a>
     <p><p><big><big>Wiring diagram for Spark Core with DHT22 Sensor</big></big><br>
     </p>
     <img alt=""
-      src="https://github.com/piettetech/PietteTech_DHT/blob/master/DHT22%20Example.png"
+      src="https://github.com/eliteio/PietteTech_DHT/blob/master/extras/DHT22_Example.png"
       height="354" width="495">
     <p>
       DATASHEETS: </p>
