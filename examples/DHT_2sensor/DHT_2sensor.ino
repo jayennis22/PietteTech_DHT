@@ -62,6 +62,9 @@ void setup()
   Serial.print("LIB version: ");
   Serial.println(DHTLIB_VERSION);
   Serial.println("---------------");
+  
+  DHTA.begin();
+  DHTB.begin();
 
   delay(1000);        // Delay 1s to let the sensors settle
   _lastTimeInLoop = millis();

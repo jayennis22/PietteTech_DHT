@@ -70,24 +70,29 @@ uint16_t word(uint8_t high, uint8_t low) {
  * NOTE:  callback_wrapper is only here for backwards compatibility with v0.3 and earlier
  *        it is no longer used or needed
  */
+PietteTech_DHT::PietteTech_DHT() {
+}
 PietteTech_DHT::PietteTech_DHT(uint8_t sigPin, uint8_t dht_type, void(*callback_wrapper)()) {
-  begin(sigPin, dht_type);
-  _firstreading = true;
+  _sigPin = sigPin;
+  _type = dht_type;
 }
 
 /*
  * NOTE:  callback_wrapper is only here for backwards compatibility with v0.3 and earlier
  *        it is no longer used or needed
  */
-void PietteTech_DHT::begin(uint8_t sigPin, uint8_t dht_type, void(*callback_wrapper)()) {
-  _sigPin = sigPin;
-  _type = dht_type;
-
-  pinMode(sigPin, OUTPUT);
-  digitalWrite(sigPin, HIGH);
+void PietteTech_DHT::begin() {
+  _firstreading = true;
   _lastreadtime = 0;
   _state = STOPPED;
   _status = DHTLIB_ERROR_NOTSTARTED;
+  pinMode(sigPin, OUTPUT);
+  digitalWrite(sigPin, HIGH);
+}
+void PietteTech_DHT::begin(uint8_t sigPin, uint8_t dht_type, void(*callback_wrapper)()) {
+  _sigPin = sigPin;
+  _type = dht_type;
+  this->begin();
 }
 
 int PietteTech_DHT::acquire() {

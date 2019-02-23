@@ -73,8 +73,13 @@ const int  DHTLIB_ERROR_NOTSTARTED       = -7;
 class PietteTech_DHT
 {
 public:
+  // either this combination of constructor and begin() call
   PietteTech_DHT(uint8_t sigPin, uint8_t dht_type, void(*callback_wrapper)() = NULL);
+  void begin();
+  // or this
+  PietteTech_DHT();
   void begin(uint8_t sigPin, uint8_t dht_type, void(*callback_wrapper)() = NULL);
+
   /*
    * NOTE:  isrCallback is only here for backwards compatibility with v0.3 and earlier
    *        it is no longer used or needed

@@ -55,6 +55,7 @@ void setup()
   Serial.print("LIB version: ");
   Serial.println(DHTLIB_VERSION);
   Serial.println("---------------");
+  DHT.begin();
 }
 
 /*
