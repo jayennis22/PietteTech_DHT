@@ -86,8 +86,8 @@ void PietteTech_DHT::begin() {
   _lastreadtime = 0;
   _state = STOPPED;
   _status = DHTLIB_ERROR_NOTSTARTED;
-  pinMode(sigPin, OUTPUT);
-  digitalWrite(sigPin, HIGH);
+  pinMode(_sigPin, OUTPUT);
+  digitalWrite(_sigPin, HIGH);
 }
 void PietteTech_DHT::begin(uint8_t sigPin, uint8_t dht_type, void(*callback_wrapper)()) {
   _sigPin = sigPin;
