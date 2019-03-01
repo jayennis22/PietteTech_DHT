@@ -39,7 +39,7 @@
 #include <Particle.h>
 #include <math.h>
 
-const char DHTLIB_VERSION[]              = "0.0.7";
+const char DHTLIB_VERSION[]              = "0.0.10";
 
 // device types
 const int  DHT11                         = 11;
