@@ -63,12 +63,22 @@ const int  DHTLIB_ERROR_ACQUIRING        = -5;
 const int  DHTLIB_ERROR_DELTA            = -6;
 const int  DHTLIB_ERROR_NOTSTARTED       = -7;
 
-#define DHT_CHECK_STATE                    \
-        if(_state == STOPPED)              \
-            return _status;			           \
-        else if(_state != ACQUIRED)		     \
-            return DHTLIB_ERROR_ACQUIRING; \
-        if(_convert) convert();
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
+# define DHT_CHECK_STATE                    \
+         if(_state == STOPPED)              \
+           return _status;			            \
+         else if(_state != ACQUIRED)		    \
+           return DHTLIB_ERROR_ACQUIRING;   \
+         if(_convert) convert();
+#else
+# define DHT_CHECK_STATE                    \
+           detachISRIfRequested();          \
+         if(_state == STOPPED)              \
+           return _status;			            \
+         else if(_state != ACQUIRED)		    \
+           return DHTLIB_ERROR_ACQUIRING;   \
+         if(_convert) convert();
+#endif
 
 class PietteTech_DHT
 {
@@ -104,7 +114,12 @@ public:
 private:
   void _isrCallback();
   void convert();
-
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
+  // no extra steps required
+#else
+  void detachISRIfRequested();           
+  volatile bool _detachISR;
+#endif
   enum states { RESPONSE = 0, DATA = 1, ACQUIRED = 2, STOPPED = 3, ACQUIRING = 4 };
   volatile states _state;
   volatile int _status;

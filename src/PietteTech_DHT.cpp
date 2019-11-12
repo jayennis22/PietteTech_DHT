@@ -86,6 +86,12 @@ void PietteTech_DHT::begin() {
   _lastreadtime = 0;
   _state = STOPPED;
   _status = DHTLIB_ERROR_NOTSTARTED;
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
+  // no extra steps required
+#else
+  _detachISR = false;
+#endif
+
   pinMode(_sigPin, OUTPUT);
   digitalWrite(_sigPin, HIGH);
 }
@@ -146,6 +152,11 @@ int PietteTech_DHT::acquire() {
      * starts to send us data
      */
     _us = micros();
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
+    // no extra steps required
+#else
+    _detachISR = false;
+#endif
     attachInterrupt(_sigPin, &PietteTech_DHT::_isrCallback, this, FALLING);
 
     return DHTLIB_ACQUIRING;
@@ -172,6 +183,18 @@ int PietteTech_DHT::acquireAndWait(uint32_t timeout) {
 void PietteTech_DHT::isrCallback() { }
 
 void PietteTech_DHT::_isrCallback() {
+  #if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
+  // no extra steps required
+#else
+  // NOTE:  
+  // We can't call detachInterrupt() inside the ISR (c.f. https://github.com/particle-iot/device-os/issues/1835)
+  // so we'll set _detachISR inside the ISR when we're done
+  // and count on code on the main thread to detach it via detachISRIfRequested().
+  // Getting another interrupt after we've already requested a detach is benign
+  // so we'll just ignore this interrupt and return.
+  if (_detachISR) return;
+#endif
+
   unsigned long newUs = micros();
   unsigned long delta = (newUs - _us);
   _us = newUs;
@@ -179,7 +202,11 @@ void PietteTech_DHT::_isrCallback() {
   if (delta > 6000) {
     _status = DHTLIB_ERROR_ISR_TIMEOUT;
     _state = STOPPED;
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
     detachInterrupt(_sigPin);
+#else
+    _detachISR = true;
+#endif
     return;
   }
   switch (_state) {
@@ -199,7 +226,11 @@ void PietteTech_DHT::_isrCallback() {
       _state = DATA;
     }
     else {
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
       detachInterrupt(_sigPin);
+#else
+      _detachISR = true;
+#endif
       _status = DHTLIB_ERROR_RESPONSE_TIMEOUT;
       _state = STOPPED;
 #if defined(DHT_DEBUG_TIMING)
@@ -218,7 +249,11 @@ void PietteTech_DHT::_isrCallback() {
       if (_cnt == 0) { // we have completed the byte, go to next
         _cnt = 7; // restart at MSB
         if (++_idx == 5) { // go to next byte, if we have got 5 bytes stop.
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
           detachInterrupt(_sigPin);
+#else
+          _detachISR = true;
+#endif
           // Verify checksum
           uint8_t sum = _bits[0] + _bits[1] + _bits[2] + _bits[3];
           if (_bits[4] != sum) {
@@ -236,12 +271,20 @@ void PietteTech_DHT::_isrCallback() {
       else _cnt--;
     }
     else if (delta < 10) {
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
       detachInterrupt(_sigPin);
+#else
+      _detachISR = true;
+#endif
       _status = DHTLIB_ERROR_DELTA;
       _state = STOPPED;
     }
     else {
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
       detachInterrupt(_sigPin);
+#else
+      _detachISR = true;
+#endif
       _status = DHTLIB_ERROR_DATA_TIMEOUT;
       _state = STOPPED;
     }
@@ -276,6 +319,11 @@ bool PietteTech_DHT::acquiring() {
 }
 
 int PietteTech_DHT::getStatus() {
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
+  // no extra steps required
+#else
+  detachISRIfRequested();
+#endif
   return _status;
 }
 
@@ -338,3 +386,14 @@ double PietteTech_DHT::getDewPointSlow() {
   double T = log(VP / 0.61078); // temp var
   return (241.88 * T) / (17.558 - T);
 }
+
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
+// no extra steps required
+#else
+void PietteTech_DHT::detachISRIfRequested() {
+  if (_detachISR) {
+    detachInterrupt(_sigPin);
+    _detachISR = false;
+  }
+}
+#endif
