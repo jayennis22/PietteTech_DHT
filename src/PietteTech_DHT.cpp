@@ -1,5 +1,5 @@
 // FILE:        PietteTech_DHT.h
-// VERSION:     0.0.11
+// VERSION:     0.0.12
 // PURPOSE:     Particle Interrupt driven lib for DHT sensors
 // LICENSE:     GPL v3 (http://www.gnu.org/licenses/gpl.html)
 // 
@@ -66,6 +66,7 @@ uint16_t word(uint8_t high, uint8_t low) {
 // 
 PietteTech_DHT::PietteTech_DHT() {
 }
+
 PietteTech_DHT::PietteTech_DHT(uint8_t sigPin, uint8_t dht_type, void(*callback_wrapper)()) {
   _sigPin = sigPin;
   _type = dht_type;
@@ -88,7 +89,10 @@ void PietteTech_DHT::begin() {
 
   pinMode(_sigPin, OUTPUT);
   digitalWrite(_sigPin, HIGH);
+  
+  delay(1000); // allow for sensor to settle after startup
 }
+
 void PietteTech_DHT::begin(uint8_t sigPin, uint8_t dht_type, void(*callback_wrapper)()) {
   _sigPin = sigPin;
   _type = dht_type;
@@ -151,6 +155,7 @@ int PietteTech_DHT::acquire() {
 #else
     _detachISR = false;
 #endif
+
     attachInterrupt(_sigPin, &PietteTech_DHT::_isrCallback, this, FALLING);
 
     return DHTLIB_ACQUIRING;
@@ -177,7 +182,7 @@ int PietteTech_DHT::acquireAndWait(uint32_t timeout) {
 void PietteTech_DHT::isrCallback() { }
 
 void PietteTech_DHT::_isrCallback() {
-  #if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
+#if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
   // no extra steps required
 #else
   // NOTE:  
@@ -186,6 +191,7 @@ void PietteTech_DHT::_isrCallback() {
   // and count on code on the main thread to detach it via detachISRIfRequested().
   // Getting another interrupt after we've already requested a detach is benign
   // so we'll just ignore this interrupt and return.
+
   if (_detachISR) return;
 #endif
 

@@ -1,5 +1,5 @@
 // FILE:        PietteTech_DHT.h
-// VERSION:     0.0.11
+// VERSION:     0.0.12
 // PURPOSE:     Particle Interrupt driven lib for DHT sensors
 // LICENSE:     GPL v3 (http://www.gnu.org/licenses/gpl.html)
 // 
@@ -35,7 +35,7 @@
 #include <Particle.h>
 #include <math.h>
 
-const char DHTLIB_VERSION[]              = "0.0.11";
+const char DHTLIB_VERSION[]              = "0.0.12";
 
 // device types
 const int  DHT11                         = 11;
@@ -62,16 +62,16 @@ const int  DHTLIB_ERROR_NOTSTARTED       = -7;
 #if (SYSTEM_VERSION < SYSTEM_VERSION_v121RC3)
 # define DHT_CHECK_STATE                    \
          if(_state == STOPPED)              \
-           return _status;			            \
-         else if(_state != ACQUIRED)		    \
+           return _status;                  \
+         else if(_state != ACQUIRED)        \
            return DHTLIB_ERROR_ACQUIRING;   \
          if(_convert) convert();
 #else
 # define DHT_CHECK_STATE                    \
-           detachISRIfRequested();          \
+         detachISRIfRequested();            \
          if(_state == STOPPED)              \
-           return _status;			            \
-         else if(_state != ACQUIRED)		    \
+           return _status;                  \
+         else if(_state != ACQUIRED)        \
            return DHTLIB_ERROR_ACQUIRING;   \
          if(_convert) convert();
 #endif
