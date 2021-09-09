@@ -171,6 +171,10 @@ int PietteTech_DHT::acquireAndWait(uint32_t timeout) {
   if (acquiring())
   {
     _status = DHTLIB_ERROR_RESPONSE_TIMEOUT;
+    if (_state == RESPONSE) {
+      _state = STOPPED;
+      _detachISR = true;
+    }
   }
   return getStatus();
 }
